@@ -148,7 +148,6 @@ class Settings:
             'settings_module': self.SETTINGS_MODULE,
         }
 
-
 class UserSettingsHolder:
     """Holder for user configured settings."""
     # SETTINGS_MODULE doesn't make much sense in the manually configured

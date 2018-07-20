@@ -208,6 +208,7 @@ class MigrationLoader:
         # and their dependencies. Also make note of replacing migrations at this step.
         self.graph = MigrationGraph()
         self.replacements = {}
+        # 只需要吧self.disk_migrations print出来，就知道migrations中的文件是如何被组织的了
         for key, migration in self.disk_migrations.items():
             self.graph.add_node(key, migration)
             # Internal (aka same-app) dependencies.

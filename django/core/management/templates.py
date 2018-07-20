@@ -64,6 +64,7 @@ class TemplateCommand(BaseCommand):
         )
 
     def handle(self, app_or_project, name, target=None, **options):
+        # import pdb;pdb.set_trace()
         self.app_or_project = app_or_project
         self.paths_to_remove = []
         self.verbosity = options['verbosity']
@@ -98,9 +99,10 @@ class TemplateCommand(BaseCommand):
                               (app_or_project, ', '.join(extra_files)))
 
         base_name = '%s_name' % app_or_project
-        base_subdir = '%s_template' % app_or_project
+        base_subdir = '%s_template' % app_or_project  # project_template
         base_directory = '%s_directory' % app_or_project
         camel_case_name = 'camel_case_%s_name' % app_or_project
+        # project_ddd -> Projectdddd
         camel_case_value = ''.join(x for x in name.title() if x != '_')
 
         context = Context(dict(options, **{
@@ -113,11 +115,14 @@ class TemplateCommand(BaseCommand):
 
         # Setup a stub settings environment for template rendering
         if not settings.configured:
+            # TODO: 解析
+            # import pdb;pdb.set_trace()
             settings.configure()
             django.setup()
 
         template_dir = self.handle_template(options['template'],
                                             base_subdir)
+        print(f'template_dir:{template_dir}')
         prefix_length = len(template_dir) + 1
 
         for root, dirs, files in os.walk(template_dir):
@@ -156,6 +161,7 @@ class TemplateCommand(BaseCommand):
                 if new_path.endswith(extensions) or filename in extra_files:
                     with open(old_path, 'r', encoding='utf-8') as template_file:
                         content = template_file.read()
+                    # TODO: Engine的逻辑
                     template = Engine().from_string(content)
                     content = template.render(context)
                     with open(new_path, 'w', encoding='utf-8') as new_file:

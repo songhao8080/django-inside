@@ -17,6 +17,9 @@ from django.template.engine import Engine
 
 
 def check_admin_app(app_configs, **kwargs):
+    # 那这个来说，check的逻辑就是去加载对应的配置。
+    # 这里的all_sites只有AdminSite
+    # 最终经过各种绕，还是会当前模块下面的 BaseModelAdminChecks来进行检查
     from django.contrib.admin.sites import all_sites
     errors = []
     for site in all_sites:

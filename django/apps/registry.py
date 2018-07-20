@@ -83,6 +83,7 @@ class Apps:
 
             # Phase 1: initialize app configs and import app modules.
             for entry in installed_apps:
+                # import pdb;pdb.set_trace()
                 if isinstance(entry, AppConfig):
                     app_config = entry
                 else:

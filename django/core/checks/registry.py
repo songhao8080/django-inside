@@ -40,6 +40,7 @@ class CheckRegistry:
             # or
             registry.register(my_check, 'mytag', 'anothertag')
         """
+        # 装饰器，所有需要被调用的checker，都需要注册到这里来
         kwargs.setdefault('deploy', False)
 
         def inner(check):
@@ -59,6 +60,7 @@ class CheckRegistry:
         """
         Run all registered checks and return list of Errors and Warnings.
         """
+        # 调用一遍所有已经注册过的checker
         errors = []
         checks = self.get_checks(include_deployment_checks)
 
@@ -68,6 +70,14 @@ class CheckRegistry:
             # By default, 'database'-tagged checks are not run as they do more
             # than mere static code analysis.
             checks = [check for check in checks if Tags.database not in check.tags]
+
+        """
+        遍历checker，调用。
+        所有的checker都在每个App的checks.py下。
+        比如，在Admin下面，有contrib/admin/checks.py
+        所有的checks.py模块中定义的checker，比如admin中的:check_admin_app
+        而check的注册是在contrib/admin/apps.py中完成的。
+        """
 
         for check in checks:
             new_errors = check(app_configs=app_configs)

@@ -60,6 +60,7 @@ def get_commands():
     The dictionary is cached on the first call and reused on subsequent
     calls.
     """
+    # import pdb;pdb.set_trace()
     commands = {name: 'django.core' for name in find_commands(__path__[0])}
 
     if not settings.configured:
@@ -295,8 +296,13 @@ class ManagementUtility:
         Given the command-line arguments, figure out which subcommand is being
         run, create a parser appropriate to that command, and run it.
         """
+        """
+        大体逻辑分为两部分：
+        1. 处理参数
+        2. 找到对应的command，并执行。
+        """
         try:
-            subcommand = self.argv[1]
+            subcommand = self.argv[1]  # startproject
         except IndexError:
             subcommand = 'help'  # Display help if no arguments were given.
 
@@ -313,12 +319,15 @@ class ManagementUtility:
         except CommandError:
             pass  # Ignore any option errors at this point.
 
+        # 确认settings是否配置
         try:
             settings.INSTALLED_APPS
         except ImproperlyConfigured as exc:
             self.settings_exception = exc
 
         if settings.configured:
+            # 如果配置了settings，说明settings加载完了，接下来就是初始化整个Django系统了。
+            # 当我们使用./manage.py <命令> 运行项目时就会到这儿
             # Start the auto-reloading dev server even if the code is broken.
             # The hardcoded condition is a code smell but we can't rely on a
             # flag on the command class because we haven't located it yet.
@@ -346,6 +355,7 @@ class ManagementUtility:
             else:
                 django.setup()
 
+        # BASH complete的自动补全逻辑在里面
         self.autocomplete()
 
         if subcommand == 'help':
@@ -362,10 +372,13 @@ class ManagementUtility:
         elif self.argv[1:] in (['--help'], ['-h']):
             sys.stdout.write(self.main_help_text() + '\n')
         else:
+            # subcommand = startproject
+            # startproject_module.Command()
             self.fetch_command(subcommand).run_from_argv(self.argv)
 
 
 def execute_from_command_line(argv=None):
     """Run a ManagementUtility."""
+    """ 所有命令行程序的入口，manage.py直接调用的位置 """
     utility = ManagementUtility(argv)
     utility.execute()

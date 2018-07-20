@@ -276,6 +276,7 @@ class BaseCommand:
         to stderr. If the ``--traceback`` option is present or the raised
         ``Exception`` is not ``CommandError``, raise it.
         """
+        # import pdb;pdb.set_trace()
         self._called_from_command_line = True
         parser = self.create_parser(argv[0], argv[1])
 
@@ -328,6 +329,7 @@ class BaseCommand:
             translation.deactivate_all()
 
         try:
+            # 静态检查：其实就是调用各个App的checks模块中的函数，确保一些配置的可用。
             if self.requires_system_checks and not options.get('skip_checks'):
                 self.check()
             if self.requires_migrations_checks:
@@ -348,6 +350,7 @@ class BaseCommand:
         return output
 
     def _run_checks(self, **kwargs):
+        # check的逻辑都在core/checks/registry.py中
         return checks.run_checks(**kwargs)
 
     def check(self, app_configs=None, tags=None, display_num_errors=False,
@@ -421,6 +424,22 @@ class BaseCommand:
         """
         Print a warning if the set of migrations on disk don't match the
         migrations in the database.
+        """
+        """
+        migrations的check其实比较直观，如果migrate时遇到过问题的话，就会理解。
+
+        比如这提示：
+
+        You have 6 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, sessions, sites.
+        Run 'python manage.py migrate' to apply them.
+
+        Django的migrate有两部分组成：
+        一是代码中的migrations文件下的一个个文件，这些文件是由对应App中的Model的变化产生的。
+        二是在执行migrate时，Django需要知道哪些已经执行过了，哪些没执行过。所以这个逻辑需要存储在数据库中。
+
+        所以下面的逻辑就是，从数据库中拿到已经执行的，跟本地的进行对比，然后判断是否有未执行的migrations。
+        并不是基于你已经创建完的表的。
+        所以如果你绕过了这个逻辑，那么Django会始终给你提示，说为啥你还不migrate呢。
         """
         from django.db.migrations.executor import MigrationExecutor
         try:
