@@ -33,7 +33,17 @@ class BaseHandler:
         self._exception_middleware = []
 
         handler = convert_exception_to_response(self._get_response)
+        """
+        拆分Middleware的配置，所谓的尘归尘，土归土，view的归view，process_exception的归process_exception
+
+        需要理解的是Django Middleware的逻辑，先调用process request，然后调用process view，最后调用process_response。
+        在process request和process response之间，就是下面拆分之后需要处理的。具体逻辑视频里讲的比较清楚了。
+        """
         for middleware_path in reversed(settings.MIDDLEWARE):
+            """
+            'django.middleware.security.SecurityMiddleware',
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            """
             middleware = import_string(middleware_path)
             try:
                 mw_instance = middleware(handler)
@@ -50,6 +60,7 @@ class BaseHandler:
                     'Middleware factory %s returned None.' % middleware_path
                 )
 
+            # 参考：https://docs.djangoproject.com/en/2.0/topics/http/middleware/#process-template-response
             if hasattr(mw_instance, 'process_view'):
                 self._view_middleware.insert(0, mw_instance.process_view)
             if hasattr(mw_instance, 'process_template_response'):
@@ -57,6 +68,7 @@ class BaseHandler:
             if hasattr(mw_instance, 'process_exception'):
                 self._exception_middleware.append(mw_instance.process_exception)
 
+            # mw_instance  = 'session', 'security'
             handler = convert_exception_to_response(mw_instance)
 
         # We only assign to this when initialization is complete as it is used
@@ -76,6 +88,7 @@ class BaseHandler:
     def get_response(self, request):
         """Return an HttpResponse object for the given HttpRequest."""
         # Setup default url resolver for this thread
+        # import pdb;pdb.set_trace()
         set_urlconf(settings.ROOT_URLCONF)
 
         response = self._middleware_chain(request)
@@ -101,6 +114,7 @@ class BaseHandler:
         template_response middleware. This method is everything that happens
         inside the request/response middleware.
         """
+        # import pdb;pdb.set_trace()
         response = None
 
         if hasattr(request, 'urlconf'):
@@ -110,11 +124,13 @@ class BaseHandler:
         else:
             resolver = get_resolver()
 
+        import pdb;pdb.set_trace()
         resolver_match = resolver.resolve(request.path_info)
         callback, callback_args, callback_kwargs = resolver_match
         request.resolver_match = resolver_match
 
         # Apply view middleware
+        # Middleware逻辑开始
         for middleware_method in self._view_middleware:
             response = middleware_method(request, callback, callback_args, callback_kwargs)
             if response:

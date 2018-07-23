@@ -151,12 +151,27 @@ class WSGIRequestHandler(simple_server.WSGIRequestHandler):
             self.rfile, self.wfile, self.get_stderr(), self.get_environ()
         )
         handler.request_handler = self      # backpointer for logging
+        # import pdb;pdb.set_trace()
         handler.run(self.server.get_app())
 
 
 def run(addr, port, wsgi_handler, ipv6=False, threading=False, server_cls=WSGIServer):
+    """
+    1. 根据参数选择Server
+    2. 启动Server
+    其中WSGIRequestHandler的作用是什么呢？
+
+    先屡清楚：
+    WSGIServer -->  simple_server.WSGIServer --> http.server.HTTPServer --> socketserver.TCPServer
+        --> socketserver.BaseServer
+
+    看到上面Server里面的逻辑之后就会知道，WSGIRequestHandler的作用是处理socket.accept过来的conn,传入到WSGIRequestHandler创建实例。
+
+    可以去看标准库中的socketserver.py模块
+    """
     server_address = (addr, port)
     if threading:
+        # 动态构建类
         httpd_cls = type('WSGIServer', (socketserver.ThreadingMixIn, server_cls), {})
     else:
         httpd_cls = server_cls
@@ -169,5 +184,8 @@ def run(addr, port, wsgi_handler, ipv6=False, threading=False, server_cls=WSGISe
         # and will prevent the need to kill the server manually if a thread
         # isn't terminating correctly.
         httpd.daemon_threads = True
+    print('wsgi_handler', wsgi_handler)
     httpd.set_app(wsgi_handler)
+
+    # socketserver.BaseServer.serve_forever()
     httpd.serve_forever()

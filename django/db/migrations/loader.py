@@ -217,6 +217,7 @@ class MigrationLoader:
             if migration.replaces:
                 self.replacements[key] = migration
         # Add external dependencies now that the internal ones have been resolved.
+        # import pdb;pdb.set_trace()
         for key, migration in self.disk_migrations.items():
             self.add_external_dependencies(key, migration)
         # Carry out replacements where possible.
@@ -238,6 +239,7 @@ class MigrationLoader:
                 # Remove it from the graph and remap dependencies to it (#25945).
                 self.graph.remove_replacement_node(key, migration.replaces)
         # Ensure the graph is consistent.
+        # import pdb;pdb.set_trace()
         try:
             self.graph.validate_consistency()
         except NodeNotFoundError as exc:

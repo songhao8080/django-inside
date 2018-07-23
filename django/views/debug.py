@@ -455,6 +455,9 @@ class ExceptionReporter:
 
 def technical_404_response(request, exception):
     """Create a technical 404 error response. `exception` is the Http404."""
+    """
+    同时也会处理默认页面的输出
+    """
     try:
         error_url = exception.args[0]['path']
     except (IndexError, TypeError, KeyError):

@@ -92,7 +92,7 @@ class MiddlewareMixin:
         if hasattr(self, 'process_request'):
             response = self.process_request(request)
         if not response:
-            response = self.get_response(request)
+            response = self.get_response(request)  # security.get_response -> session.__call__
         if hasattr(self, 'process_response'):
             response = self.process_response(request, response)
         return response

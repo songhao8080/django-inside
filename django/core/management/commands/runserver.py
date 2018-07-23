@@ -117,7 +117,12 @@ class Command(BaseCommand):
         quit_command = 'CTRL-BREAK' if sys.platform == 'win32' else 'CONTROL-C'
 
         self.stdout.write("Performing system checks...\n\n")
-        import pdb;pdb.set_trace()
+        # import pdb;pdb.set_trace()
+        """
+        启动之前执行两项检测：
+        1. 调用各个App自己checks模块，来确认是否有配置上的问题。
+        2. 检测migrations是否已经全部applied。
+        """
         self.check(display_num_errors=True)
         # Need to check migrations here, so can't use the
         # requires_migrations_check attribute.
@@ -138,6 +143,12 @@ class Command(BaseCommand):
         })
 
         try:
+            # 读取settings中的WSGI_APPLICATION配置
+            # 也就是：
+            # from django.core.wsgi import get_wsgi_application
+            # 拿到WSGIHandler，位于：from django.core.handlers.wsgi import WSGIHandler
+            # import pdb;pdb.set_trace()
+
             handler = self.get_handler(*args, **options)
             run(self.addr, int(self.port), handler,
                 ipv6=self.use_ipv6, threading=threading, server_cls=self.server_cls)

@@ -154,6 +154,9 @@ def inotify_code_changed():
     Check for changed code using inotify. After being called
     it blocks until a change event has been fired.
     """
+    """
+    使用pyinotify监控文件是否变化
+    """
     class EventHandler(pyinotify.ProcessEvent):
         modified_code = None
 
@@ -225,6 +228,7 @@ def check_errors(fn):
             fn(*args, **kwargs)
         except Exception:
             _exception = sys.exc_info()
+            print(_exception)
 
             et, ev, tb = _exception
 
