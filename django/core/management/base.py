@@ -443,11 +443,14 @@ class BaseCommand:
         """
         from django.db.migrations.executor import MigrationExecutor
         try:
+            # 4.2 加载executor，里面会加载migrations文件
             executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
         except ImproperlyConfigured:
             # No databases are configured (or the dummy one)
             return
 
+        # import pdb;pdb.set_trace()
+        # 4.2 执行检查
         plan = executor.migration_plan(executor.loader.graph.leaf_nodes())
         if plan:
             apps_waiting_migration = sorted({migration.app_label for migration, backwards in plan})

@@ -54,6 +54,7 @@ class MigrationLoader:
         Return the path to the migrations module for the specified app_label
         and a boolean indicating if the module is specified in
         settings.MIGRATION_MODULE.
+        4.2 同MODEL_MODULE一样，不过这里可以通过settings配置。
         """
         if app_label in settings.MIGRATION_MODULES:
             return settings.MIGRATION_MODULES[app_label], True
@@ -64,14 +65,15 @@ class MigrationLoader:
     def load_disk(self):
         """Load the migrations from all INSTALLED_APPS from disk."""
         self.disk_migrations = {}
-        self.unmigrated_apps = set()
-        self.migrated_apps = set()
+        self.unmigrated_apps = set()  # 4.2 没有migrate的app
+        self.migrated_apps = set()  # 4.2 已经migrate的app
         for app_config in apps.get_app_configs():
             # Get the migrations module directory
             module_name, explicit = self.migrations_module(app_config.label)
             if module_name is None:
                 self.unmigrated_apps.add(app_config.label)
                 continue
+            # import pdb;pdb.set_trace()
             was_loaded = module_name in sys.modules
             try:
                 module = import_module(module_name)
@@ -85,6 +87,8 @@ class MigrationLoader:
                 raise
             else:
                 # PY3 will happily import empty dirs as namespaces.
+                # 4.2 参考：https://www.python.org/dev/peps/pep-0420/
+                # https://gist.github.com/the5fire/d69fd2530e7fcd439d9f9a2fa31fa7cf
                 if not hasattr(module, '__file__'):
                     self.unmigrated_apps.add(app_config.label)
                     continue
@@ -115,6 +119,11 @@ class MigrationLoader:
                     migration_name,
                     app_config.label,
                 )
+                """
+                4.2
+                最终得到这样的: self.disk_migrations:
+                {('myapp', '0001_initial'): <Migration myapp.0001_initial>}
+                """
 
     def get_migration(self, app_label, name_prefix):
         """Return the named migration or raise NodeNotFoundError."""
@@ -197,30 +206,38 @@ class MigrationLoader:
         usually a problem as generally migration stuff runs in a one-shot process.
         """
         # Load disk data
+        # 4.2 从磁盘加载对应的migrations/*.py文件
         self.load_disk()
         # Load database data
+        # 4.2 从数据库加载
         if self.connection is None:
             self.applied_migrations = set()
         else:
             recorder = MigrationRecorder(self.connection)
+            # 4.2  从数据库中获取已经migrated内容
             self.applied_migrations = recorder.applied_migrations()
         # To start, populate the migration graph with nodes for ALL migrations
         # and their dependencies. Also make note of replacing migrations at this step.
         self.graph = MigrationGraph()
         self.replacements = {}
-        # 只需要吧self.disk_migrations print出来，就知道migrations中的文件是如何被组织的了
+        # 4.2 只需要把self.disk_migrations print出来，就知道migrations中的文件是如何被组织的了
+        # import pdb;pdb.set_trace()
         for key, migration in self.disk_migrations.items():
+            # print(key, migration)
+            # 4.2 添加图节点
             self.graph.add_node(key, migration)
             # Internal (aka same-app) dependencies.
+            # 4.2 添加节点依赖，构建有向图
             self.add_internal_dependencies(key, migration)
             # Replacing migrations.
             if migration.replaces:
                 self.replacements[key] = migration
         # Add external dependencies now that the internal ones have been resolved.
-        # import pdb;pdb.set_trace()
         for key, migration in self.disk_migrations.items():
+            # print(key, migration)
             self.add_external_dependencies(key, migration)
         # Carry out replacements where possible.
+        # import pdb;pdb.set_trace()
         for key, migration in self.replacements.items():
             # Get applied status of each of this migration's replacement targets.
             applied_statuses = [(target in self.applied_migrations) for target in migration.replaces]

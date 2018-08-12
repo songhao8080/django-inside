@@ -407,6 +407,7 @@ class URLResolver:
         # infinite recursion. Concurrent threads may call this at the same
         # time and will need to continue, so set 'populating' on a
         # thread-local variable.
+        import pdb;pdb.set_trace()
         if getattr(self._local, 'populating', False):
             return
         try:
@@ -568,6 +569,8 @@ class URLResolver:
         if not self._populated:
             self._populate()
 
+        # self.reverse_dict是django.utils.datastructures.MultiValueDict
+        # 支持多值的dict结构
         possibilities = self.reverse_dict.getlist(lookup_view)
 
         for possibility, pattern, defaults, converters in possibilities:

@@ -15,7 +15,9 @@ class MigrationExecutor:
 
     def __init__(self, connection, progress_callback=None):
         self.connection = connection
+        # 4.2 加载所有的migrations
         self.loader = MigrationLoader(self.connection)
+        # 4.2 操作数据库
         self.recorder = MigrationRecorder(self.connection)
         self.progress_callback = progress_callback
 
@@ -23,12 +25,14 @@ class MigrationExecutor:
         """
         Given a set of targets, return a list of (Migration instance, backwards?).
         """
+        # import pdb;pdb.set_trace()
         plan = []
         if clean_start:
             applied = set()
         else:
             applied = set(self.loader.applied_migrations)
         for target in targets:
+            # import pdb;pdb.set_trace()
             # If the target is (app_label, None), that means unmigrate everything
             if target[1] is None:
                 for root in self.loader.graph.root_nodes():

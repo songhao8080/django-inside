@@ -88,6 +88,7 @@ class AppConfig:
             # If import_module succeeds, entry is a path to an app module,
             # which may specify an app config class with default_app_config.
             # Otherwise, entry is a path to an app config class or an error.
+            # 'myapp'
             module = import_module(entry)
 
         except ImportError:
@@ -193,6 +194,7 @@ class AppConfig:
     def import_models(self):
         # Dictionary of models for this app, primarily maintained in the
         # 'all_models' attribute of the Apps this AppConfig is attached to.
+        # 在app.registry中定义:self.all_models = defaultdict(OrderedDict)
         self.models = self.apps.all_models[self.label]
 
         if module_has_submodule(self.module, MODELS_MODULE_NAME):

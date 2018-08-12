@@ -63,6 +63,7 @@ class Apps:
         Import each application module and then each model module.
 
         It is thread-safe and idempotent, but not reentrant.
+        《Django源码解析视频》第二章第二节有讲到
         """
         if self.ready:
             return
@@ -82,6 +83,9 @@ class Apps:
             self.loading = True
 
             # Phase 1: initialize app configs and import app modules.
+            # 第一阶段：初始化app_configs并且引入app模块
+            # import pdb;pdb.set_trace()
+            # installed_apps = ['myapp']
             for entry in installed_apps:
                 # import pdb;pdb.set_trace()
                 if isinstance(entry, AppConfig):
@@ -94,9 +98,14 @@ class Apps:
                         "duplicates: %s" % app_config.label)
 
                 self.app_configs[app_config.label] = app_config
-                app_config.apps = self
+                app_config.apps = self  # 注意这里，把当前对象赋值到各个app实例中
 
             # Check for duplicate app names.
+            """
+            t = 'asdfsdafsdafsdfdsafasfdsfadsfdsfsadbdsfa'
+            思考下，一道面试题，统计一个字符串（仅包含英文）里各字母的出现频率，并从高到低排序。
+            课程：4.1
+            """
             counts = Counter(
                 app_config.name for app_config in self.app_configs.values())
             duplicates = [
@@ -109,14 +118,26 @@ class Apps:
             self.apps_ready = True
 
             # Phase 2: import models modules.
+            # 第二阶段：加载models
             for app_config in self.app_configs.values():
+                # import pdb;pdb.set_trace()
                 app_config.import_models()
+
+                # 执行完后，app_config上就有了models这个模块
 
             self.clear_cache()
 
             self.models_ready = True
 
             # Phase 3: run ready() methods of app configs.
+            """
+            第三阶段：调用已经注册好的ready事件
+            在每个App中都有这样一个事件，用来做一些项目启动之后的事
+            比如： check
+            前面课程中讲的check模块的逻辑就是从这来的
+            - 视频课程:4.1
+            """
+            # import pdb;pdb.set_trace()
             for app_config in self.get_app_configs():
                 app_config.ready()
 

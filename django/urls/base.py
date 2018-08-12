@@ -25,8 +25,10 @@ def resolve(path, urlconf=None):
 
 
 def reverse(viewname, urlconf=None, args=None, kwargs=None, current_app=None):
+    # import pdb;pdb.set_trace()
     if urlconf is None:
         urlconf = get_urlconf()
+    # resolver用来通过name获取到view url定义的对象。
     resolver = get_resolver(urlconf)
     args = args or []
     kwargs = kwargs or {}
@@ -114,6 +116,7 @@ def get_script_prefix():
     wishes to construct their own URLs manually (although accessing the request
     instance is normally going to be a lot cleaner).
     """
+    # import pdb;pdb.set_trace()
     return getattr(_prefixes, "value", '/')
 
 

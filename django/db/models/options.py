@@ -200,6 +200,9 @@ class Options:
         del self.meta
 
         # If the db_table wasn't provided, use the app_label + model_name.
+        # by the5fire: db_table构建
+        # 如果没有设置db_table则在此处通过app_label和mdoel_name设置
+        # 也就是，如果app是admin，model是User，那么就是:admin_user
         if not self.db_table:
             self.db_table = "%s_%s" % (self.app_label, self.model_name)
             self.db_table = truncate_name(self.db_table, connection.ops.max_name_length())

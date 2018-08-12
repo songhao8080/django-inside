@@ -115,7 +115,8 @@ class TemplateCommand(BaseCommand):
 
         # Setup a stub settings environment for template rendering
         if not settings.configured:
-            # TODO: 解析
+            # 如果没有settings配置，初始化settings配置，
+            # 初始化Django项目，因为后面需要用到模板引擎
             # import pdb;pdb.set_trace()
             settings.configure()
             django.setup()

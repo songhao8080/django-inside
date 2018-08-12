@@ -52,6 +52,7 @@ class Migration:
         self.name = name
         self.app_label = app_label
         # Copy dependencies & other attrs as we might mutate them at runtime
+        # 4.2 把类的变量转为实例变量，避免修改后影响其他地方使用
         self.operations = list(self.__class__.operations)
         self.dependencies = list(self.__class__.dependencies)
         self.run_before = list(self.__class__.run_before)

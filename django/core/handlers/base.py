@@ -124,7 +124,8 @@ class BaseHandler:
         else:
             resolver = get_resolver()
 
-        import pdb;pdb.set_trace()
+        # import pdb;pdb.set_trace()
+        # 解析当前请求应该被哪个方法（View）来处理
         resolver_match = resolver.resolve(request.path_info)
         callback, callback_args, callback_kwargs = resolver_match
         request.resolver_match = resolver_match

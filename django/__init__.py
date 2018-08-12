@@ -16,9 +16,12 @@ def setup(set_prefix=True):
     from django.urls import set_script_prefix
     from django.utils.log import configure_logging
 
+    # 配置LOGGING，通过加载Django默认的logging模块配置:
+    # LOGGING_CONFIG = 'logging.config.dictConfig'
     configure_logging(settings.LOGGING_CONFIG, settings.LOGGING)
     if set_prefix:
         set_script_prefix(
             '/' if settings.FORCE_SCRIPT_NAME is None else settings.FORCE_SCRIPT_NAME
         )
-    apps.populate(settings.INSTALLED_APPS)
+    # import pdb;pdb.set_trace()
+    apps.populate(settings.INSTALLED_APPS)  # myapp放到INSTALLED_APPS

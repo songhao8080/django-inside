@@ -126,6 +126,7 @@ class Command(BaseCommand):
         self.check(display_num_errors=True)
         # Need to check migrations here, so can't use the
         # requires_migrations_check attribute.
+        # 检查migrations
         self.check_migrations()
         now = datetime.now().strftime('%B %d, %Y - %X')
         self.stdout.write(now)

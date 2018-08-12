@@ -22,6 +22,7 @@ FORCE = object()
 
 class SQLCompiler:
     def __init__(self, query, connection, using):
+        # import pdb;pdb.set_trace()
         self.query = query
         self.connection = connection
         self.using = using
@@ -443,6 +444,7 @@ class SQLCompiler:
         If 'with_limits' is False, any limit/offset information is not included
         in the query.
         """
+        # import pdb;pdb.set_trace()
         refcounts_before = self.query.alias_refcount.copy()
         try:
             extra_select, order_by, group_by = self.pre_sql_setup()
@@ -457,7 +459,7 @@ class SQLCompiler:
                 distinct_fields = self.get_distinct()
                 # This must come after 'select', 'ordering', and 'distinct'
                 # (see docstring of get_from_clause() for details).
-                from_, f_params = self.get_from_clause()
+                from_, f_params = self.get_from_clause()  # 获取要操作的表 by the5fire
                 where, w_params = self.compile(self.where) if self.where is not None else ("", [])
                 having, h_params = self.compile(self.having) if self.having is not None else ("", [])
                 result = ['SELECT']

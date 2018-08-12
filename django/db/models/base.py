@@ -73,6 +73,7 @@ class ModelBase(type):
     def __new__(cls, name, bases, attrs):
         super_new = super().__new__
 
+        # import pdb;pdb.set_trace()
         # Also ensure initialization is only performed for subclasses of Model
         # (excluding Model class itself).
         parents = [b for b in bases if isinstance(b, ModelBase)]
@@ -97,8 +98,19 @@ class ModelBase(type):
         app_label = None
 
         # Look for an application configuration to attach the model to.
+        # 第四课第一节
+        # 根据当前module的名称（比如：django.contrib.admin.models)来获取对应的
+        # app_config，通过全局的apps这个变量。
         app_config = apps.get_containing_app_config(module)
 
+        """
+        by the5fire
+        如果设置了app_label，那就直接跳过，app_label的作用是
+        创建数据库表的前缀，比如User模型，对应的app_label是admin，
+        则对应的表是:admin_user。
+
+        在早期的Django版本中，如果创建表之后如果调整了目录结构，需要通过制定Model Meta中的db_table来找到对应的表。
+        """
         if getattr(meta, 'app_label', None) is None:
             if app_config is None:
                 if not abstract:
@@ -111,6 +123,7 @@ class ModelBase(type):
             else:
                 app_label = app_config.label
 
+        # by the5fire: 构建Model的_meta信息
         new_class.add_to_class('_meta', Options(meta, app_label))
         if not abstract:
             new_class.add_to_class(
@@ -306,6 +319,7 @@ class ModelBase(type):
             return new_class
 
         new_class._prepare()
+        # import pdb;pdb.set_trace()
         new_class._meta.apps.register_model(new_class._meta.app_label, new_class)
         return new_class
 
