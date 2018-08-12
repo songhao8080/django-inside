@@ -325,6 +325,9 @@ class MigrationGraph:
     def ensure_not_cyclic(self, start, get_children):
         # Algo from GvR:
         # http://neopythonic.blogspot.co.uk/2009/01/detecting-cycles-in-directed-graph.html
+        # 4.3 get_children:lambda x: (parent.key for parent in self.node_map[x].parents)
+        # 问题：https://code.djangoproject.com/ticket/29243
+        # import pdb;pdb.set_trace()
         todo = set(self.nodes)
         while todo:
             node = todo.pop()
