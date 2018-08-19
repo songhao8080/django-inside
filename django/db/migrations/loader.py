@@ -164,6 +164,7 @@ class MigrationLoader:
             return
         if key[0] in self.migrated_apps:
             try:
+                # 处理dependencies中__first__的逻辑
                 if key[1] == "__first__":
                     return self.graph.root_nodes(key[0])[0]
                 else:  # "__latest__"
@@ -317,6 +318,8 @@ class MigrationLoader:
         Look through the loaded graph and detect any conflicts - apps
         with more than one leaf migration. Return a dict of the app labels
         that conflict with the migration names that conflict.
+        4.2_2 by the5fire
+        如果一个app下发现两个Leaf Node，说明存在冲突。
         """
         seen_apps = {}
         conflicting_apps = set()

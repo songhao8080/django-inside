@@ -81,7 +81,6 @@ class OperationWriter:
                 else:
                     self.feed('%s=%s,' % (_arg_name, arg_string))
                 imports.update(arg_imports)
-
         imports = set()
         name, args, kwargs = self.operation.deconstruct()
         operation_args = get_func_args(self.operation.__init__)
@@ -97,12 +96,16 @@ class OperationWriter:
 
         self.indent()
 
+        # 4.2_2 by the5fire
+        # 处理位置参数
         for i, arg in enumerate(args):
             arg_value = arg
             arg_name = operation_args[i]
             _write(arg_name, arg_value)
 
         i = len(args)
+        # 4.2_2 by the5fire
+        # 处理完位置参数之后，处理关键字参数
         # Only iterate over remaining arguments
         for arg_name in operation_args[i:]:
             if arg_name in kwargs:  # Don't sort to maintain signature order

@@ -41,6 +41,8 @@ class MigrationAutodetector:
         Take a graph to base names on and an optional set of apps
         to try and restrict to (restriction is not guaranteed)
         """
+        # 4.2_2 - by the5fire
+        # 获取模型上的变更
         changes = self._detect_changes(convert_apps, graph)
         changes = self.arrange_for_graph(changes, graph, migration_name)
         if trim_to_apps:
@@ -133,8 +135,11 @@ class MigrationAutodetector:
         self.new_model_keys = set()
         self.new_proxy_keys = set()
         self.new_unmanaged_keys = set()
+        # import pdb;pdb.set_trace()
         for al, mn in self.from_state.models:
             model = self.old_apps.get_model(al, mn)
+            # 4.2_2 by the5fire
+            # 不被管理的Model，如果你是通过逆向解析数据库得到的Model，会有此项。
             if not model._meta.managed:
                 self.old_unmanaged_keys.add((al, mn))
             elif al not in self.from_state.real_apps:
@@ -516,6 +521,9 @@ class MigrationAutodetector:
             related_fields = {}
             primary_key_rel = None
             for field in model_opts.local_fields:
+                # 4.2_2 by the5fire
+                # 遍历Model的所有字段
+                # related字段
                 if field.remote_field:
                     if field.remote_field.model:
                         if field.primary_key:
@@ -820,6 +828,7 @@ class MigrationAutodetector:
 
     def generate_added_fields(self):
         """Make AddField operations."""
+        # import pdb;pdb.set_trace()
         for app_label, model_name, field_name in sorted(self.new_field_keys - self.old_field_keys):
             self._generate_added_field(app_label, model_name, field_name)
 
