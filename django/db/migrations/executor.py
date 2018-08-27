@@ -92,6 +92,8 @@ class MigrationExecutor:
         """
         # The django_migrations table must be present to record applied
         # migrations.
+        # 4.2_3 by the5fire
+        # 确认表(django_migrations)存在
         self.recorder.ensure_schema()
 
         if plan is None:

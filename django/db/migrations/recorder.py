@@ -50,9 +50,13 @@ class MigrationRecorder:
         if self.has_table():
             return
         # Make the table
+        # 4.2_3 by the5fire
+        # 创建django_migrations表，可以跟进入看一下
+        # 熟悉下Django的Model转换为SQL的过程，在后面的内容中我们还会介绍。
+        # editor: db.backends.sqlite3.schema.DatabaseSchemaEditor
         try:
             with self.connection.schema_editor() as editor:
-                editor.create_model(self.Migration)
+                editor.create_model(self.Migration)  # db/backends/base/schema.py:L255
         except DatabaseError as exc:
             raise MigrationSchemaMissing("Unable to create the django_migrations table (%s)" % exc)
 

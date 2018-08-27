@@ -73,12 +73,18 @@ class Command(BaseCommand):
         db = options['database']
         connection = connections[db]
 
+        import pdb;pdb.set_trace()
         # Hook for backends needing any database preparation
+        # 4.2_3 by the5fire
+        # 这算是db层的预留接口
         connection.prepare_database()
         # Work out which apps have migrations and which do not
+        # 之前介绍过，就是去加载磁盘上的migrations文件，并且读取数据库记录
+        # 不同的是，增了了一个migration_progress_callback的回调，其作用是输出一些执行的信息
         executor = MigrationExecutor(connection, self.migration_progress_callback)
 
         # Raise an error if any migrations are applied before their dependencies.
+        # 之前也介绍过，一致性检查，确认某个节点的依赖节点已经被applied
         executor.loader.check_consistent_history(connection)
 
         # Before anything else, see if there's conflicting apps and drop out
@@ -130,6 +136,8 @@ class Command(BaseCommand):
             targets = executor.loader.graph.leaf_nodes()
 
         plan = executor.migration_plan(targets)
+        # 4.2_3 by the5fire
+        # 如果有用到过老版本的Django，会知道，在没有migration之前，都是用./manage.py syncdb来同步
         run_syncdb = options['run_syncdb'] and executor.loader.unmigrated_apps
 
         # Print some useful info
@@ -156,6 +164,7 @@ class Command(BaseCommand):
                         % (targets[0][1], targets[0][0])
                     )
 
+        # import pdb;pdb.set_trace()
         pre_migrate_state = executor._create_project_state(with_applied_migrations=True)
         pre_migrate_apps = pre_migrate_state.apps
         emit_pre_migrate_signal(
