@@ -164,7 +164,12 @@ class Command(BaseCommand):
                         % (targets[0][1], targets[0][0])
                     )
 
-        # import pdb;pdb.set_trace()
+        # 4.2_3 by the5fire
+        # 这里会创建一个ProjectState对象，这个对象位于:
+        # django/db/migrations/state.py
+        # 它的作用是记录执行过程中迁移状态的变更，比如：
+        # 哪些Migration已经执行了。
+        # 可以参考：db/migrations/migration.py中的apply函数
         pre_migrate_state = executor._create_project_state(with_applied_migrations=True)
         pre_migrate_apps = pre_migrate_state.apps
         emit_pre_migrate_signal(
@@ -204,6 +209,9 @@ class Command(BaseCommand):
         else:
             fake = options['fake']
             fake_initial = options['fake_initial']
+
+        # 4.2_3 by the5fire
+        # 执行migrate
         post_migrate_state = executor.migrate(
             targets, plan=plan, state=pre_migrate_state.clone(), fake=fake,
             fake_initial=fake_initial,

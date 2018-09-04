@@ -150,7 +150,10 @@ class MigrationExecutor:
                     state.apps  # Render all -- performance critical
                     if self.progress_callback:
                         self.progress_callback("render_success")
+                # 4.2_3 by the5fire
+                # 执行具体的migrate逻辑
                 state = self.apply_migration(state, migration, fake=fake, fake_initial=fake_initial)
+                # 记得有一个面试题也是类似，不过这个是个set
                 migrations_to_run.remove(migration)
 
         return state
