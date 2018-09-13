@@ -498,6 +498,8 @@ class URLResolver:
             new_path, args, kwargs = match
             for pattern in self.url_patterns:
                 try:
+                    # 4.3_1 by the5fire
+                    # sub_match返回ResolverMatch对象，里面包含了对应的view function
                     sub_match = pattern.resolve(new_path)
                 except Resolver404 as e:
                     sub_tried = e.args[0].get('tried')
@@ -566,13 +568,18 @@ class URLResolver:
         if args and kwargs:
             raise ValueError("Don't mix *args and **kwargs in call to reverse()!")
 
+        import pdb;pdb.set_trace()
         if not self._populated:
+            # 4.3.2 by the5fire
+            # 加载url配置到对应MultiValueDict结构中
             self._populate()
 
         # self.reverse_dict是django.utils.datastructures.MultiValueDict
         # 支持多值的dict结构
         possibilities = self.reverse_dict.getlist(lookup_view)
-
+        
+        # 4.3.2 by the5fire
+        # 获取对应lookup_view的多个值，找到符合条件的，条件是指各个参数匹配
         for possibility, pattern, defaults, converters in possibilities:
             for result, params in possibility:
                 if args:

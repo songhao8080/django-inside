@@ -122,10 +122,15 @@ class BaseHandler:
             set_urlconf(urlconf)
             resolver = get_resolver(urlconf)
         else:
+            # 4.3_1 by the5fire
+            # 前面做了set_urlconf的操作，这里在获取到
+            # 我们需要看下它返回的对象: django.urls.resolvers.URLResolver
             resolver = get_resolver()
 
-        # import pdb;pdb.set_trace()
+        # 4.3_1 by the5fire
+        # 从这里开始看URL的解析
         # 解析当前请求应该被哪个方法（View）来处理
+        # 最终返回：ResolverMatch(func=myapp.views.index, args=(), kwargs={}, url_name=None, app_names=[], namespaces=[])
         resolver_match = resolver.resolve(request.path_info)
         callback, callback_args, callback_kwargs = resolver_match
         request.resolver_match = resolver_match
@@ -138,6 +143,11 @@ class BaseHandler:
                 break
 
         if response is None:
+            # 4.3_1 by the5fire
+            # Atomic: 事务原子性
+            # Django默认的特性，在settings的DATABASES中可以配置
+            # 参考： https://docs.djangoproject.com/en/2.1/topics/db/transactions/#tying-transactions-to-http-requests
+            # 这里的wrapped_callback就是views.index函数
             wrapped_callback = self.make_view_atomic(callback)
             try:
                 response = wrapped_callback(request, *callback_args, **callback_kwargs)
