@@ -16,7 +16,7 @@ class DjangoTemplates(BaseEngine):
     app_dirname = 'templates'
 
     def __init__(self, params):
-        params = params.copy()
+        params = params.copy()  # 常用的方法，避免对引用进行修改
         options = params.pop('OPTIONS').copy()
         options.setdefault('autoescape', True)
         options.setdefault('debug', settings.DEBUG)

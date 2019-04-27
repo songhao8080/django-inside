@@ -98,6 +98,7 @@ UNKNOWN_SOURCE = '<unknown source>'
 
 # match a variable or block tag and capture the entire tag, including start/end
 # delimiters
+# the5fire: 可以参考的正则表达式定义，通过更加语义化的方式让正则读起来更容易
 tag_re = (re.compile('(%s.*?%s|%s.*?%s|%s.*?%s)' %
           (re.escape(BLOCK_TAG_START), re.escape(BLOCK_TAG_END),
            re.escape(VARIABLE_TAG_START), re.escape(VARIABLE_TAG_END),
@@ -157,7 +158,7 @@ class Template:
         self.origin = origin
         self.engine = engine
         self.source = template_string
-        self.nodelist = self.compile_nodelist()
+        self.nodelist = self.compile_nodelist()  # the5fire: 渲染对应的模板源码为 node list
 
     def __iter__(self):
         for node in self.nodelist:
@@ -183,8 +184,14 @@ class Template:
         is annotated with contextual line information where it occurred in the
         template source.
         """
-        if self.engine.debug:
-            lexer = DebugLexer(self.source)
+        if False and self.engine.debug:
+            # the5fire: 对于 DEBUG 模式，Lexer 会有所不同，会收集很多执行的细节，便于调试器排错。
+            # 更多的信息意味着更慢的执行速度，所以对于生产环境一定要关闭 DEBUG 模式
+            # https://docs.djangoproject.com/en/2.2/topics/templates/#module-django.template.backends.django
+            # If it is True, the fancy error page will display a detailed report for any exception raised during template rendering.
+            # This report contains the relevant snippet of the template with the appropriate line highlighted.
+            # 代码细节：https://github.com/django/django/blob/2.0.7/django/template/context_processors.py#L35
+            lexer = DebugLexer(self.source)  
         else:
             lexer = Lexer(self.source)
 
@@ -291,7 +298,7 @@ def linebreak_iter(template_source):
 
 class Token:
     def __init__(self, token_type, contents, position=None, lineno=None):
-        """
+        """TOKEN_TEXT
         A token representing a string from the template.
 
         token_type
@@ -391,6 +398,7 @@ class DebugLexer(Lexer):
         start and end position in the source. This is slower than the default
         lexer so only use it when debug is True.
         """
+
         lineno = 1
         result = []
         upto = 0
@@ -437,6 +445,7 @@ class Parser:
         tokens, e.g. ['elif', 'else', 'endif']. If no matching token is
         reached, raise an exception with the unclosed block tag details.
         """
+        #import ipdb;ipdb.set_trace()
         if parse_until is None:
             parse_until = []
         nodelist = NodeList()
@@ -758,6 +767,9 @@ class Variable:
         if not isinstance(var, str):
             raise TypeError(
                 "Variable must be a string or number, got %s" % type(var))
+
+        # the5fire: 这里需要提两类编程方式：恳求原谅式和请求许可式。
+        # 显然这里是恳求原谅式的编程方式，不过这里显然把所有变量都当做 float 处理，触发异常的频率会比较高。
         try:
             # First try to treat this variable as a number.
             #
