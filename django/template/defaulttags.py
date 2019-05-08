@@ -158,7 +158,7 @@ class ForNode(Node):
             parentloop = {}
         with context.push():
             try:
-                values = self.sequence.resolve(context, True)
+                values = self.sequence.resolve(context, True) # 获取 context 中的 ip_list
             except VariableDoesNotExist:
                 values = []
             if values is None:
@@ -793,11 +793,13 @@ def do_for(parser, token):
                                     current one
         ==========================  ================================================
     """
+    # the5fire: 校验
     bits = token.split_contents()
     if len(bits) < 4:
         raise TemplateSyntaxError("'for' statements should have at least four"
                                   " words: %s" % token.contents)
 
+    # the5fire: 逆序逻辑处理
     is_reversed = bits[-1] == 'reversed'
     in_index = -3 if is_reversed else -2
     if bits[in_index] != 'in':

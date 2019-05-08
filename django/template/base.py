@@ -768,8 +768,11 @@ class Variable:
             raise TypeError(
                 "Variable must be a string or number, got %s" % type(var))
 
-        # the5fire: 这里需要提两类编程方式：恳求原谅式和请求许可式。
+        # the5fire: 这里需要提两类编程方式：恳求原谅式（EAFP）和请求许可式（LBYL）。
+        # LBYL:Look Before You Leap
+        # EAFP:It's Easier to Ask Forgiveness than Permission
         # 显然这里是恳求原谅式的编程方式，不过这里显然把所有变量都当做 float 处理，触发异常的频率会比较高。
+
         try:
             # First try to treat this variable as a number.
             #
