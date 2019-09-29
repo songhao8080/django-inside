@@ -147,6 +147,7 @@ class Field:
         """
         value = self.to_python(value)
         self.validate(value)
+        #import ipdb;ipdb.set_trace()
         self.run_validators(value)
         return value
 

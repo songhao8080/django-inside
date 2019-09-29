@@ -214,15 +214,14 @@ class ModelFormMetaclass(DeclarativeFieldsMetaclass):
         formfield_callback = attrs.pop('formfield_callback', base_formfield_callback)
 
         new_class = super(ModelFormMetaclass, mcs).__new__(mcs, name, bases, attrs)
-
         if bases == (BaseModelForm,):
             return new_class
-
         opts = new_class._meta = ModelFormOptions(getattr(new_class, 'Meta', None))
 
         # We check if a string was passed to `fields` or `exclude`,
         # which is likely to be a mistake where the user typed ('foo') instead
         # of ('foo',)
+        # 校验
         for opt in ['fields', 'exclude', 'localized_fields']:
             value = getattr(opts, opt)
             if isinstance(value, str) and value != ALL_FIELDS:
@@ -236,6 +235,7 @@ class ModelFormMetaclass(DeclarativeFieldsMetaclass):
 
         if opts.model:
             # If a model is defined, extract form fields from it.
+            # 校验
             if opts.fields is None and opts.exclude is None:
                 raise ImproperlyConfigured(
                     "Creating a ModelForm without either the 'fields' attribute "

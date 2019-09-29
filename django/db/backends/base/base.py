@@ -179,6 +179,7 @@ class BaseDatabaseWrapper:
     def connect(self):
         """Connect to the database. Assume that the connection is closed."""
         # Check for invalid configurations.
+        # import pudb;pudb.set_trace()
         self.check_settings()
         # In case the previous connection was closed while in an atomic block
         self.in_atomic_block = False

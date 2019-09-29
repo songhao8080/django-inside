@@ -643,6 +643,7 @@ class Field(RegisterLookupMixin):
         # mapped to one of the built-in Django field types. In this case, you
         # can implement db_type() instead of get_internal_type() to specify
         # exactly which wacky database column type you want to use.
+        # import ipdb;ipdb.set_trace()
         data = self.db_type_parameters(connection)
         try:
             return connection.data_types[self.get_internal_type()] % data

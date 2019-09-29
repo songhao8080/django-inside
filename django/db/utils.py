@@ -193,6 +193,9 @@ class ConnectionHandler:
             test_settings.setdefault(key, None)
 
     def __getitem__(self, alias):
+        """
+        connections[alias].xx
+        """
         if hasattr(self._connections, alias):
             return getattr(self._connections, alias)
 

@@ -55,6 +55,7 @@ class SessionBase:
         return self._session[key]
 
     def __setitem__(self, key, value):
+        import pudb;pu.db
         self._session[key] = value
         self.modified = True
 
@@ -190,6 +191,7 @@ class SessionBase:
         try:
             return self._session_cache
         except AttributeError:
+            import pudb;pu.db
             if self.session_key is None or no_load:
                 self._session_cache = {}
             else:
@@ -295,6 +297,7 @@ class SessionBase:
         """
         Create a new session key, while retaining the current session data.
         """
+        import pudb;pu.db
         data = self._session
         key = self.session_key
         self.create()

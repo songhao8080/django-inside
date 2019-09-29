@@ -66,7 +66,7 @@ class CursorWrapper:
         self.cursor = cursor
 
     def execute(self, query, args=None):
-        try:
+        try:    
             # args is None means no string interpolation
             return self.cursor.execute(query, args)
         except Database.OperationalError as e:
@@ -231,6 +231,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         return kwargs
 
     def get_new_connection(self, conn_params):
+        # import ipdb;ipdb.set_trace()
         return Database.connect(**conn_params)
 
     def init_connection_state(self):

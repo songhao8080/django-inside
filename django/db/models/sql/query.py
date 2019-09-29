@@ -272,7 +272,8 @@ class Query:
         if using is None and connection is None:
             raise ValueError("Need either using or connection")
         if using:
-            connection = connections[using]
+            # the5fire: 7.5: MySQL 场景下，这里拿到的是 backends.mysql.base 中的DatabaseWrapper
+            connection = connections[using]  
         return connection.ops.compiler(self.compiler)(self, connection, using)
 
     def get_meta(self):
@@ -705,6 +706,7 @@ class Query:
         If 'create' is true, a new alias is always created. Otherwise, the
         most recently created alias for the table (if one exists) is reused.
         """
+        # import pudb;pudb.set_trace()
         alias_list = self.table_map.get(table_name)
         if not create and alias_list:
             alias = alias_list[0]

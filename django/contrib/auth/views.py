@@ -55,6 +55,7 @@ class LoginView(SuccessURLAllowedHostsMixin, FormView):
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
+        import pudb;pu.db
         if self.redirect_authenticated_user and self.request.user.is_authenticated:
             redirect_to = self.get_success_url()
             if redirect_to == self.request.path:

@@ -66,6 +66,7 @@ class BaseForm:
     improvements to the form API should be made to this class, not to the Form
     class.
     """
+    #https://docs.djangoproject.com/en/2.2/ref/forms/api/#django.forms.Form.use_required_attribute
     default_renderer = None
     field_order = None
     prefix = None

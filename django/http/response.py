@@ -243,6 +243,7 @@ class HttpResponseBase:
             except Exception:
                 pass
         self.closed = True
+        # import pudb;pudb.set_trace()
         signals.request_finished.send(sender=self._handler_class)
 
     def write(self, content):

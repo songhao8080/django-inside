@@ -741,7 +741,9 @@ class SQLCompiler:
         (for example, cur_depth=1 means we are looking at models with direct
         connections to the root model).
         """
+        #import pudb;pudb.set_trace()
         def _get_field_choices():
+            # 获取所有的关系型字段
             direct_choices = (f.name for f in opts.fields if f.is_relation)
             reverse_choices = (
                 f.field.related_query_name()

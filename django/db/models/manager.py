@@ -115,7 +115,7 @@ class BaseManager:
         setattr(model, name, ManagerDescriptor(self))
 
         model._meta.add_manager(self)
-
+        
     def _set_creation_counter(self):
         """
         Set the creation counter value for this instance and increment the

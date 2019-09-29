@@ -28,6 +28,7 @@ class SessionStore(SessionBase):
         return self.get_model_class()
 
     def load(self):
+        import ipdb;ipdb.set_trace()
         try:
             s = self.model.objects.get(
                 session_key=self.session_key,
@@ -42,9 +43,11 @@ class SessionStore(SessionBase):
             return {}
 
     def exists(self, session_key):
+        import pudb;pu.db
         return self.model.objects.filter(session_key=session_key).exists()
 
     def create(self):
+        import pudb;pu.db
         while True:
             self._session_key = self._get_new_session_key()
             try:
