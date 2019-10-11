@@ -207,10 +207,12 @@ class Collector:
         if collect_related:
             parents = model._meta.parents
             for related in get_candidate_relations_to_delete(model._meta):
+                import ipdb;ipdb.set_trace()
                 # Preserve parent reverse relationships if keep_parents=True.
                 if keep_parents and related.model in parents:
                     continue
                 field = related.field
+                # the5fire: 11.6 设定了不进行级联删除，实际中，比较常用的配置
                 if field.remote_field.on_delete == DO_NOTHING:
                     continue
                 batches = self.get_del_batches(new_objs, field)

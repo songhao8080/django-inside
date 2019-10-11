@@ -368,7 +368,7 @@ class AdminSite:
         """
         Display the login form for the given HttpRequest.
         """
-        import pudb;pu.db
+        #import pudb;pu.db
         if request.method == 'GET' and self.has_permission(request):
             # Already logged-in, redirect to admin index
             index_path = reverse('admin:index', current_app=self.name)

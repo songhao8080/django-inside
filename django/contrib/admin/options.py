@@ -820,7 +820,7 @@ class ModelAdmin(BaseModelAdmin):
         """
         # If self.actions is explicitly set to None that means that we don't
         # want *any* actions enabled on this page.
-        if self.actions is None or IS_POPUP_VAR in request.GET:
+        if self.actions is None or IS_POPUP_VAR in request.GET:  # the5fire: 11.7 弹窗的话不展示 action
             return OrderedDict()
 
         actions = []
@@ -968,6 +968,8 @@ class ModelAdmin(BaseModelAdmin):
         """
         Return the preserved filters querystring.
         """
+        # the5fire: 11.7 https://docs.djangoproject.com/en/2.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.preserve_filters
+        # 参考： https://www.jianshu.com/p/fc95db9ab5d4
         match = request.resolver_match
         if self.preserve_filters and match:
             opts = self.model._meta
@@ -1732,6 +1734,7 @@ class ModelAdmin(BaseModelAdmin):
 
     @csrf_protect_m
     def delete_view(self, request, object_id, extra_context=None):
+        #import ipdb;ipdb.set_trace()
         with transaction.atomic(using=router.db_for_write(self.model)):
             return self._delete_view(request, object_id, extra_context)
 
